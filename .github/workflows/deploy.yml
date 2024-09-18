@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to AWS EC2
+        uses: aws-actions/aws-codedeploy-github-actions@v1.0.0
+        with:
+          application-name: jatahy
+          deployment-group: jatahy-deployment-group
+          deployment-config-name: CodeDeployDefault.AllAtOnce
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          region: us-east-1
