@@ -44,4 +44,4 @@ jobs:
             --application-name jatahy \
             --deployment-group-name jatahy-deployment-group \
             --deployment-config-name CodeDeployDefault.AllAtOnce \
-            --github-location repository=${{ github.repository }}, commitId=${{ github.sha }}
+            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
