@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,11 +24,24 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Deploy to AWS EC2
-        uses: aws-actions/aws-codedeploy-github-actions@v1.0.0
+  cd:
+    runs-on: ubuntu-latest
+    needs: 
+      - ci
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          application-name: jatahy
-          deployment-group: jatahy-deployment-group
-          deployment-config-name: CodeDeployDefault.AllAtOnce
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          region: us-east-1
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Create CodeDeploy Deployment
+        id: deploy
+        run: |
+          aws deploy create-deployment \
+            --application-name jatahy \
+            --deployment-group-name jatahy-deployment-group \
+            --deployment-config-name CodeDeployDefault.AllAtOnce \
+            --github-location repository=${{ github.repository }}, commitId=${{ github.sha }}
