@@ -1,3 +1,4 @@
 #!/bin/bash
 
-npm install --prefix $HOME/jatahy
+cd $HOME/jatahy
+npm install
